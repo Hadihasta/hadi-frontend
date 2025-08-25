@@ -212,7 +212,6 @@ const Page = () => {
             </div>
           </div>
 
-          {/* Buttons */}
           <div className="flex justify-end gap-3 mt-8">
             <Button variant="destructive">Batal</Button>
             <Button>Simpan</Button>
@@ -222,5 +221,6 @@ const Page = () => {
     </div>
   );
 };
+// component masih butuh lifecycle dan configurasi !!
 
 export default Page;
