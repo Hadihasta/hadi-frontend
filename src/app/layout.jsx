@@ -1,4 +1,5 @@
 import Navigation from "@/component/Navigation";
+import SideBar from "@/component/SideBar";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable}  ${inter.variable}  antialiased`}
       >
         <Navigation />
+        <SideBar />
         {children}
       </body>
     </html>
