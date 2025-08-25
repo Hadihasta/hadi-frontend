@@ -1,6 +1,38 @@
-import Image from "next/image";
+"use client";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:3001/api/meeting-bookings"
+        );
+        if (res.data.success) {
+          setBookings(res.data.bookings);
+        }
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-[#FAF7F7] ml-[70px] h-screen max-w-screen p-10">
       <div className="flex items-center gap-3 mb-6 ">
@@ -37,65 +69,60 @@ export default function Home() {
             </tr>
           </thead>
           <tbody>
-            <tr className="border-b">
-              <td className="px-4 py-3 font-medium">
-                UNIT KEUANGAN
-              </td>
-              <td className="px-4 py-3">Ruang Prambanan</td>
-              <td className="px-4 py-3">10 Orang</td>
-              <td className="px-4 py-3">
-                11 Desember 2024
-              </td>
-              <td className="px-4 py-3">11:00 s/d 13:00</td>
-              <td className="px-4 py-3">8 Orang</td>
-              <td className="px-4 py-3">
-                Snack Siang, Makan Siang
-              </td>
-            </tr>
-            <tr>
-              <td className="px-4 py-3 font-medium">
-                UNIT SDM
-              </td>
-              <td className="px-4 py-3">Ruang Prambanan</td>
-              <td className="px-4 py-3">10 Orang</td>
-              <td className="px-4 py-3">
-                11 Desember 2024
-              </td>
-              <td className="px-4 py-3">11:00 s/d 13:00</td>
-              <td className="px-4 py-3">3 Orang</td>
-              <td className="px-4 py-3">Snack Sore</td>
-            </tr>
+            {bookings.length > 0 ? (
+              bookings.map((booking) => (
+                <tr key={booking.id} className="border-b">
+                  <td className="px-4 py-3 font-medium">
+                    {booking.unit?.name}
+                  </td>
+                  <td className="px-4 py-3">
+                    {booking.room?.name}
+                  </td>
+                  <td className="px-4 py-3">
+                    {booking.room?.capacity} Orang
+                  </td>
+                  <td className="px-4 py-3">
+                    {new Date(
+                      booking.meetingDate
+                    ).toLocaleDateString("id-ID")}
+                  </td>
+                  <td className="px-4 py-3">
+                    {new Date(
+                      booking.startTime
+                    ).toLocaleTimeString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}{" "}
+                    s/d{" "}
+                    {new Date(
+                      booking.endTime
+                    ).toLocaleTimeString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </td>
+                  <td className="px-4 py-3">
+                    {booking.participants} Orang
+                  </td>
+                  <td className="px-4 py-3">
+                    {booking.consumption
+                      .map((c) => c.consumptionType?.name)
+                      .join(", ")}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="7"
+                  className="px-4 py-3 text-center text-gray-500"
+                >
+                  Tidak ada booking
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
-
-        <div className="flex items-center justify-between mt-4">
-          <span className="text-sm text-gray-500">
-            Showing 1-10 of 1000
-          </span>
-          <div className="flex items-center gap-1">
-            <button className="px-3 py-1 text-sm border rounded-md">
-              Back
-            </button>
-            <button className="px-3 py-1 text-sm border rounded-md">
-              1
-            </button>
-            <button className="px-3 py-1 text-sm border rounded-md bg-[#296377] text-white">
-              2
-            </button>
-            <button className="px-3 py-1 text-sm border rounded-md">
-              3
-            </button>
-            <button className="px-3 py-1 text-sm border rounded-md">
-              4
-            </button>
-            <button className="px-3 py-1 text-sm border rounded-md">
-              5
-            </button>
-            <button className="px-3 py-1 text-sm border rounded-md">
-              Next
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
